@@ -1,3 +1,2 @@
-// study 전용 공동작업 서버가 준비되면 HTTPS 주소를 지정합니다.
-// 다른 프로젝트의 저장·인증 서버를 재사용하지 않습니다.
-window.MOCKUP_SHARED_CONFIG=Object.freeze({server:'',defaultProject:'mjha',repository:'with-demo/study'});
+// study 전용 서버. html/G-FAIR 서버의 데이터베이스·인증 설정을 공유하지 않습니다.
+window.MOCKUP_SHARED_CONFIG=Object.freeze({server:'https://study-description-collaboration.meung00.chatgpt.site',defaultProject:'mjha',repository:'with-demo/study'});
