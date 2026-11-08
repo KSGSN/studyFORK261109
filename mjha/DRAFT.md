@@ -30,4 +30,4 @@ index.html#HOME-01 대시보드
 index.html#CAL-01 월 / #CAL-02 주 / #CAL-03 일
 index.html#PRJ-01 프로젝트 목록 / #PRJ-02 프로젝트 보드
 index.html#ATT-01 출퇴근·휴가 / #MEM-01 회원관리
-index.html#MY-01 내정보 / #LOG-01 로그인
+index.html#USR-01 내정보 / #LOG-01 로그인

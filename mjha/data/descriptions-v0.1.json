@@ -194,7 +194,7 @@
       }
     },
     {
-      "screen": "MY-01",
+      "screen": "USR-01",
       "anchor": {
         "selector": "#profile-form",
         "sample": "",
