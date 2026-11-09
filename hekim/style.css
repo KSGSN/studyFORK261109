@@ -173,19 +173,21 @@ img {
 .destination-search {
   position:relative;
   z-index:2;
-  display:flex;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
   align-items:center;
-  gap:20px;
+  gap:16px 20px;
   margin:-1px 35px 0;
   padding:23px 15px;
   border-bottom:1px solid var(--line)
 }
 .destination-search label {
-  flex:1;
+  min-width:0;
   padding-left:13px
 }
 .destination-search label>span {
   display:block;
+  word-break:keep-all;
   font-size:10px;
   font-weight:700
 }
@@ -592,7 +594,7 @@ img {
 }
 .destination-search {
   margin:0 12px;
-  flex-wrap:wrap;
+  grid-template-columns:minmax(0,1fr);
   padding:20px 0;
   gap:8px
 }
@@ -919,3 +921,9 @@ html,body {background:#fff}
 #screen-meta {display:none}
 #content {border:0;min-height:calc(100dvh - var(--sb-toolbar-height,51px))}
 .auth-shell {min-height:calc(100dvh - var(--sb-toolbar-height,51px) - 170px)}
+
+/* 검색 오류는 다음 줄을 사용하고 입력창·버튼은 줄어들지 않습니다. */
+.destination-search>.form-error {grid-column:1/-1;min-width:0;width:100%;margin:0}
+.destination-search input {min-width:0}
+.search-submit {white-space:nowrap;gap:10px;flex-shrink:0}
+.search-icon {display:block;width:19px;height:19px;flex:none;overflow:visible}

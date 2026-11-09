@@ -9,13 +9,13 @@
   window.YEOJEONG_DESCRIPTIONS={
     'HOME-01':[
       spec('hero','메인 비주얼 / 여행 만들기','버튼','활성','N','서비스 메시지와 여행지 풍경 일러스트를 표시합니다. 여행 만들기 선택 시 여행 등록 화면으로 이동합니다.',{destination:'MYTR-02',exception:'미로그인 상태에서는 여행 등록 화면에 로그인 안내를 표시합니다.'}),
-      spec('search','여행지 검색','인풋 + 버튼','빈 값','Y','도시·국가·관광명소 키워드를 입력하고 검색 또는 Enter로 여행지 목록에 검색 조건을 전달합니다.',{placeholder:'도시, 국가 또는 여행지 검색',inputLimit:'최대 60자',validation:'공백만 입력 불가',errorMessage:'여행지 또는 국가를 입력해 주세요.',destination:'TRV-01',policy:formPolicy}),
+      spec('search','여행지 검색','인풋 + 버튼','빈 값','Y','도시·국가·관광명소 키워드를 입력하고 검색 또는 Enter로 여행지 목록에 검색 조건을 전달합니다. 돋보기 아이콘은 글리프 대신 SVG로 표시하고, 오류는 입력창·버튼 아래의 별도 줄에 표시합니다.',{placeholder:'도시, 국가 또는 여행지 검색',inputLimit:'최대 60자',validation:'공백만 입력 불가',errorMessage:'여행지 또는 국가를 입력해 주세요.',destination:'TRV-01',policy:formPolicy}),
       spec('recommendations','추천·인기 여행지','탭 + 카드','전체 / 최대 4개','N','전체·국내·해외 선택에 따라 추천 카드를 즉시 갱신합니다. 카드에는 국가·기간·예시 평점을 표시합니다. 카드 선택은 해당 여행지 상세로 이동하며 하트는 찜 상태를 전환합니다.',{options:'전체 / 국내 / 해외',destination:'TRV-02 / AUTH-01',policy:'고정 예시 데이터를 평점순으로 구성합니다. 찜은 로그인 후 브라우저에 저장합니다.',emptyState:'선택 지역에 해당하는 카드만 표시합니다.'}),
       spec('start','여행 계획 시작하기','버튼','활성','N','새 여행을 만드는 화면으로 이동합니다.',{destination:'MYTR-02'})
     ],
     'AUTH-01':[
-      spec('credentials','로그인 폼','인풋 + 체크박스','빈 값 / 상태 유지 미선택','Y','아이디와 비밀번호 입력값를 입력합니다. 이 브라우저에 저장된 프로필의 아이디와 일치하고 비밀번호 입력이 8자 이상이면 브라우저 로그인합니다. 상태 유지 선택 시 브라우저 재실행 후에도 모의 상태를 복원합니다.',{inputLimit:'아이디 최대 100자 / 비밀번호 8~100자',options:'로그인 상태 유지',validation:'현재 저장된 프로필 아이디 일치 / 비밀번호 8자 이상',errorMessage:'아이디를 확인해 주세요.',destination:'로그인 이전 요청 화면 또는 MYTR-01',policy:authPolicy+' 상태 미유지 시 sessionStorage, 유지 시 localStorage에 비밀번호 없이 상태값만 저장합니다.',exception:'브라우저 저장이 차단되면 상태 저장 오류를 표시합니다.'}),
-      spec('account-links','계정 보조 동작','링크 + 버튼','활성','N','아이디·비밀번호 찾기와 회원가입으로 이동합니다. 바로 시작하는 보조 로그인 버튼은 제공하지 않습니다.',{destination:'AUTH-02 / JOIN-01 / MYTR-01',policy:authPolicy})
+      spec('credentials','로그인 폼','인풋 + 체크박스','빈 값 / 상태 유지 미선택','N','아이디·비밀번호를 모두 비운 채 로그인 버튼을 눌러 현재 브라우저의 프로필로 시작할 수 있습니다. 탈퇴 등으로 프로필이 없으면 최초 예시를 복원합니다. 값을 입력한 경우에는 저장된 아이디 일치와 비밀번호 8자 이상을 검사합니다. 로그인 상태 유지를 선택하면 브라우저 재실행 후에도 상태를 복원합니다.',{inputLimit:'입력 시 아이디 최대 100자 / 비밀번호 8~100자',options:'로그인 상태 유지',validation:'두 항목 모두 빈 값이면 검증 없이 진행 / 입력한 경우 저장 아이디 일치 및 비밀번호 8자 이상',errorMessage:'아이디를 확인해 주세요. / 비밀번호를 8자 이상 입력해 주세요.',destination:'로그인 이전 요청 화면 또는 MYTR-01',policy:authPolicy+' 상태 미유지 시 sessionStorage, 유지 시 localStorage에 비밀번호 없이 상태값만 저장합니다.',exception:'브라우저 저장이 차단되면 상태 저장 오류를 표시합니다.'}),
+      spec('account-links','계정 보조 동작','링크','활성','N','아이디·비밀번호 찾기와 회원가입으로 이동합니다. 바로 시작하는 보조 로그인 버튼은 제공하지 않습니다.',{destination:'AUTH-02 / JOIN-01 / MYTR-01',policy:authPolicy})
     ],
     'AUTH-02':[
       spec('recovery-tabs','계정 찾기 구분','탭','아이디 찾기','N','탭 전환 시 이전 결과와 브라우저 인증 흐름 단계를 초기화합니다.',{options:'아이디 찾기 / 비밀번호 재설정'}),

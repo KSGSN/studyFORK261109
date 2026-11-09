@@ -9,6 +9,7 @@
     button(label,action,attrs='',cls='outline'){return `<button type="button" data-action="${action}" ${attrs} class="${cls}">${label}</button>`;},
     section(key,html,cls=''){return `<section data-description-key="${key}" class="${cls}">${html}</section>`;},
     field(name,label,options={}){const {type='text',value='',required=false,max=100,hint='',attrs=''}=options;return `<label class="form-field"><span>${label}${required?' <b class="required">*</b>':''}</span><input name="${name}" type="${type}" value="${esc(value)}" ${required?'required':''} maxlength="${max}" ${attrs}>${hint?`<small>${hint}</small>`:''}<span class="input-error" data-error="${name}"></span></label>`;},
+    searchIcon(){return '<svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="3"/><path d="m15 15 6 6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>';},
     errorBox(){return '<p class="form-error" role="alert" tabindex="-1"></p>';},
     pageHead(kicker,title,subtitle,action=''){return `<div class="page-heading"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`;},
     empty(title,body,action=''){return `<div class="empty-state"><span aria-hidden="true">✧</span><h2>${title}</h2><p>${body}</p>${action}</div>`;},
