@@ -8,8 +8,7 @@
 - 저장소: https://github.com/with-demo/study
 - 사용 안내: [common/README.md](common/README.md)
 
-현재 공동 저장·GitHub 인증 서버는 미설정이며 로그인과 설명 작성은 연결 전까지 비활성입니다.
-기존 프로젝트의 저장 서버에는 접속하지 않습니다.
+설명 편집은 로그인·저장 서버 없이 동작합니다. 편집 내용은 현재 브라우저에 보관하며, 상단의 **JSON 내보내기 / JSON 불러오기**로 파일을 저장·이동할 수 있습니다. HTML·JS나 GitHub 파일을 자동으로 수정하지 않습니다. 자세한 사용법은 [공통 도구 안내](common/README.md)를 확인하세요.
 
 ## 팀원별 실습 폴더
 - `mjha/`: mjha 실습 공간

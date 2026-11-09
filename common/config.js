@@ -1,2 +1,2 @@
-// study 전용 서버. html/G-FAIR 서버의 데이터베이스·인증 설정을 공유하지 않습니다.
-window.MOCKUP_SHARED_CONFIG=Object.freeze({server:'https://study-description-collaboration.meung00.chatgpt.site',defaultProject:'mjha',repository:'with-demo/study'});
+// 설명은 브라우저에 보관하며 JSON 파일로 내보내고 불러옵니다. 서버 연결은 사용하지 않습니다.
+window.MOCKUP_SHARED_CONFIG=Object.freeze({server:'',defaultProject:'mjha',repository:'KSGSN/studyFORK261109'});
