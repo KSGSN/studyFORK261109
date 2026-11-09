@@ -22,7 +22,7 @@
     if(Y.route()==='screens')return;
     specs().forEach((spec,i)=>{const target=Y.content.querySelector(`[data-description-key="${spec.key}"]`);if(!target)return;target.classList.add('yj-spec-target');const button=document.createElement('button');button.type='button';button.className='yj-spec-pin';button.dataset.localPin=spec.key;button.textContent=String(i+1).padStart(2,'0');button.setAttribute('aria-label',button.textContent+'번 '+spec.item+' 설명 보기');target.prepend(button);});
   }
-  function sync(){const view=window.GFAIR_DESCRIPTION_VIEW||{closed:true,numbers:true};document.body.classList.toggle('yj-show-pins',!view.closed&&view.numbers&&Y.route()!=='screens');const close=document.querySelector('[data-spec="close"]');if(close)close.textContent=view.closed?'디스크립션 열기':'디스크립션 닫기';renderPanel();}
+  function sync(){const view=window.GFAIR_DESCRIPTION_VIEW||{closed:true,numbers:true};document.body.classList.toggle('yj-show-pins',view.numbers&&Y.route()!=='screens');const close=document.querySelector('[data-spec="close"]');if(close)close.textContent=view.closed?'디스크립션 열기':'디스크립션 닫기';renderPanel();}
   // 공통 패널이 새로 그려지는 경우에만 기준 명세를 복원합니다. 하위 노드 변경은 관찰하지 않습니다.
   new MutationObserver(()=>{renderPanel();const title=panel.querySelector('#annotation-panel > h2');if(title)title.textContent='공동 검토 설명';}).observe(panel,{childList:true});
   document.addEventListener('click',event=>{const pin=event.target.closest('[data-local-pin]');if(pin){event.preventDefault();event.stopPropagation();window.dispatchEvent(new Event('annotation-open'));select(pin.dataset.localPin,true);}const card=event.target.closest('[data-local-spec]');if(card)select(card.dataset.localSpec);});
