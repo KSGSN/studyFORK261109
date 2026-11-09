@@ -43,108 +43,8 @@ img {
   display:block;
   width:100%
 }
-.project-bar {
-  padding:19px 26px;
-  background:white;
-  border-bottom:1px solid var(--line);
-  display:flex;
-  justify-content:space-between;
-  align-items:center
-}
-.project-bar strong {
-  font-size:17px;
-  letter-spacing:-.6px
-}
-.project-bar div>span {
-  margin-left:18px;
-  font-size:12px;
-  color:var(--muted)
-}
-.phase {
-  font-size:11px;
-  border:1px solid var(--line);
-  border-radius:4px;
-  padding:4px 10px
-}
 .viewer {
-  display:grid;
-  grid-template-columns:224px minmax(0,1fr)
-}
-.sitemap {
-  background:#fff;
-  border-right:1px solid var(--line);
-  padding:25px 17px
-}
-.map-heading {
-  font-size:11px;
-  letter-spacing:1.7px;
-  font-weight:700;
-  display:flex;
-  justify-content:space-between
-}
-.map-heading span {
-  color:var(--green)
-}
-.screen-search {
   display:block;
-  margin:22px 0 25px;
-  font-size:11px;
-  color:var(--muted)
-}
-.screen-search input {
-  width:100%;
-  border:1px solid var(--line);
-  background:#f8faf7;
-  border-radius:5px;
-  padding:9px;
-  margin-top:6px;
-  font-size:11px
-}
-.menu-group {
-  margin-bottom:21px
-}
-.menu-group h2 {
-  font-size:12px;
-  margin:0 8px 8px
-}
-.menu-group h2>span {
-  font-size:10px;
-  color:#98a39a;
-  margin-right:10px
-}
-.menu-group a {
-  display:flex;
-  flex-direction:column;
-  padding:9px 11px;
-  border-radius:5px;
-  font-size:11px;
-  color:#6c7972;
-  margin:3px 0
-}
-.menu-group a:hover {
-  background:#f3f6ef
-}
-.menu-group a[aria-current] {
-  background:#eaf2e9;
-  color:#225d48;
-  font-weight:700;
-  border-left:3px solid #30775a
-}
-.menu-group a small {
-  font-size:9px;
-  letter-spacing:.7px;
-  margin-left:13px;
-  opacity:.75
-}
-.map-foot {
-  border-top:1px solid var(--line);
-  padding-top:20px;
-  font-size:10px;
-  color:var(--green)
-}
-.map-foot span {
-  color:#849085;
-  margin-left:6px
 }
 .workspace {
   padding:0 26px 30px;
@@ -605,7 +505,7 @@ img {
 }
 @media(max-width:1100px) {
   .viewer {
-  grid-template-columns:190px minmax(0,1fr)
+  display:block;
 }
 .workspace {
   padding:0 15px 20px
@@ -648,25 +548,8 @@ img {
   .project-bar {
   padding:14px
 }
-.project-bar div>span,.phase {
-  display:none
-}
 .viewer {
-  grid-template-columns:145px minmax(0,1fr)
-}
-.sitemap {
-  padding:18px 8px
-}
-.menu-group a {
-  padding:7px;
-  font-size:10px
-}
-.map-heading {
-  font-size:9px
-}
-.map-foot span {
   display:block;
-  margin:0
 }
 .workspace {
   padding:0 8px 15px
