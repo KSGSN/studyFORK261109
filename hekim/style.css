@@ -912,3 +912,10 @@ hr {border:0;border-top:1px solid var(--line);margin:22px 0}
  .day-block {padding:18px}
  .hero .hero-copy {padding:35px 25px}
 }
+
+/* 서비스 캔버스는 공통 기획 도구 바로 아래부터 전체 너비로 채웁니다. */
+html,body {background:#fff}
+#app .workspace,.ui-spec-layout.with-spec #app .workspace {max-width:none;width:100%;margin:0;padding:0}
+#screen-meta {display:none}
+#content {border:0;min-height:calc(100dvh - var(--sb-toolbar-height,51px))}
+.auth-shell {min-height:calc(100dvh - var(--sb-toolbar-height,51px) - 170px)}
