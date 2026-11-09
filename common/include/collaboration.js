@@ -3,7 +3,8 @@
  'use strict';
  const PROJECT=document.body.dataset.project||window.MOCKUP_SHARED_CONFIG.defaultProject;
  const KEY='study.descriptions.local.v1.'+PROJECT,FORMAT='study-descriptions-v1';
- let all=[],loaded=false,error='';
+ let all=[],published=[],loaded=false,error='',loading=false,initial;
+ const publishedUrl=new URL('descriptions.json',location.href);publishedUrl.search='';publishedUrl.hash='';
  const changed=()=>window.dispatchEvent(new Event('collaboration-updated'));
  const current=()=>window.MOCKUP_DESCRIPTION_CONTEXT?.id||decodeURIComponent(location.hash.slice(1))||document.body.dataset.screen||'screens';
  const clone=x=>JSON.parse(JSON.stringify(x));
@@ -22,14 +23,29 @@
   }
   return clone(rows);
  }
- function read(){const raw=localStorage.getItem(KEY);return raw?validate(JSON.parse(raw)):[];}
+ function read(){const raw=localStorage.getItem(KEY);return raw!==null?validate(JSON.parse(raw)):clone(published);}
  function commit(rows){const checked=validate(rows);try{localStorage.setItem(KEY,JSON.stringify(checked));}catch{throw Error('브라우저 저장 공간이 부족하거나 저장이 차단되었습니다. 기존 데이터는 유지됩니다.');}all=checked;loaded=true;error='';changed();}
- async function refresh(){try{all=read();loaded=true;error='';}catch{error='브라우저 설명 데이터를 읽지 못했습니다. JSON 백업을 확인하거나 브라우저 저장 설정을 확인해 주세요.';}changed();}
- window.GFAIR_COLLAB={user:null,githubReady:false,mode:'local',get records(){return clone(all.filter(r=>r.screen===current()));},loading:false,get loaded(){return loaded;},get error(){return error;},refresh,
+ function parseFile(raw){let data;try{data=JSON.parse(raw);}catch{throw Error('올바른 JSON 파일이 아닙니다.');}if(data?.format!==FORMAT||data.project!==PROJECT)throw Error('현재 프로젝트('+PROJECT+')의 설명 JSON 파일을 선택해 주세요.');return validate(data.records);}
+ async function refresh(){
+  if(loading)return initial;
+  loading=true;changed();
+  try{
+   const response=await fetch(publishedUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+   if(!response.ok)throw Error('descriptions.json 응답: '+response.status);
+   const raw=await response.text();if(raw.length>5*1024*1024)throw Error('JSON 파일이 너무 큽니다.');
+   const next=parseFile(raw);published=next;all=read();loaded=true;error='';
+  }catch(e){
+   error='저장소 descriptions.json을 읽지 못했습니다. 로컬 웹 서버로 실행하고 파일 형식을 확인해 주세요.';
+   try{if(localStorage.getItem(KEY)!==null){all=read();loaded=true;}}catch{error+=' 브라우저 임시 저장도 확인해 주세요.';}
+  }finally{loading=false;changed();}
+ }
+ window.GFAIR_COLLAB={user:null,githubReady:false,mode:'local',get records(){return clone(all.filter(r=>r.screen===current()));},get loading(){return loading;},get hasDraft(){try{return localStorage.getItem(KEY)!==null;}catch{return false;}},get loaded(){return loaded;},get error(){return error;},refresh,
   exportData(){if(!loaded)throw Error('기존 데이터를 읽지 못해 내보낼 수 없습니다.');return JSON.stringify({format:FORMAT,project:PROJECT,exportedAt:new Date().toISOString(),records:all},null,2);},
-  importData(raw){let data;try{data=JSON.parse(raw);}catch{throw Error('올바른 JSON 파일이 아닙니다.');}if(data?.format!==FORMAT||data.project!==PROJECT)throw Error('현재 프로젝트('+PROJECT+')의 설명 JSON 파일을 선택해 주세요.');commit(data.records);},
+  importData(raw){commit(parseFile(raw));},
+  async usePublished(){await refresh();if(error)throw Error(error);try{localStorage.removeItem(KEY);}catch{throw Error('브라우저 임시 저장을 지우지 못했습니다.');}all=clone(published);changed();},
   async planningNotes(){return all.flatMap(r=>{try{const s=JSON.parse(r.text);return s.planningNote?[{id:r.id,screen:r.screen,number:r.number,item:s.item||'',planningNote:s.planningNote}]:[];}catch{return [];}});},
   async mutate(op,body){
+   await initial;if(!loaded)throw Error(error||'설명을 불러오는 중입니다.');
    let rows;try{rows=read();}catch{throw Error('기존 데이터를 읽지 못해 저장을 중단했습니다.');}
    const now=new Date().toISOString();let id=body.id;
    if(op==='create'){id='local-'+Date.now().toString(36)+'-'+Array.from(crypto.getRandomValues(new Uint8Array(12)),x=>x.toString(16).padStart(2,'0')).join('');rows.push({id,screen:body.screen,text:body.text,anchor:body.anchor,number:Math.max(0,...rows.filter(r=>r.screen===body.screen).map(r=>r.number))+1,revision:1,author:'로컬 편집',created:now,comments:[]});}
@@ -42,5 +58,5 @@
  window.addEventListener('storage',event=>{if(event.key===KEY||event.key===null)refresh();});
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
  document.addEventListener('click',event=>{if(event.target.closest('[data-spec=refresh]'))refresh();});
- refresh();
+ initial=refresh();
 })();
