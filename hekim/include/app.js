@@ -1,22 +1,101 @@
-/* 서버와 빌드 도구 없이 file://에서도 작동하도록 일반 script 사용 */
+/* 화면 라우팅과 사용자 동작. 화면 UI는 views.js, 저장은 store.js에서 관리합니다. */
 (() => {
- const screens=window.YEOJEONG_SCREENS;
- const groups=[...new Set(screens.map(s=>s.lv1))];
- window.GFAIR_SCREENS=groups.map(name=>({name,screens:screens.filter(s=>s.lv1===name).map(s=>({...s,summary:s.description}))}));
- window.GFAIR_SCREEN_OVERVIEWS=Object.fromEntries(screens.map(s=>[s.id,s.description]));
- const destinations=[{name:'제주',country:'대한민국',tag:'자연 속 쉼표',image:'jeju',copy:'푸른 바다와 오름 사이, 나만의 속도로',period:'2박 3일'},{name:'교토',country:'일본',tag:'골목 산책',image:'kyoto',copy:'오래된 골목에서 만나는 새로운 계절',period:'3박 4일'},{name:'파리',country:'프랑스',tag:'도시의 낭만',image:'paris',copy:'센강을 따라 걷는 영화 같은 하루',period:'4박 5일'},{name:'발리',country:'인도네시아',tag:'느긋한 휴식',image:'bali',copy:'초록빛 풍경과 함께 깊어지는 휴식',period:'4박 5일'}];
- const content=document.getElementById('content');
- const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- let selected='전체';
- function serviceHeader(){return `<header class="service-header"><a class="brand" href="#HOME-01" aria-label="여정 메인">yeojeong<span>여정</span></a><nav aria-label="서비스 메뉴"><a href="#TRV-01">여행지 찾기</a><a href="#MYTR-01">나의 여행</a><a href="#SUP-01">고객지원</a></nav><a class="login" href="#AUTH-01">로그인 <span>↗</span></a></header>`;}
- function cards(){const list=destinations.filter(d=>selected==='전체'||(selected==='국내'?d.country==='대한민국':d.country!=='대한민국'));return list.map(d=>`<article class="destination"><a href="#TRV-02" class="destination-image"><img src="assets/${d.image}.svg" alt="${d.name} 풍경 일러스트"><span>${d.tag}</span><b class="card-arrow">↗</b></a><div class="card-info"><span>${d.country} · ${d.period}</span><h3><a href="#TRV-02">${d.name}</a></h3><p>${d.copy}</p></div></article>`).join('');}
- function home(){return `${serviceHeader()}<section class="hero"><img class="hero-landscape" src="assets/coast.svg" alt="해안 마을과 바다 풍경 일러스트"><div class="hero-copy"><span class="eyebrow">EVERY JOURNEY STARTS WITH YOU</span><h1>떠나고 싶은 마음에,<br>여정을 더하다.</h1><p>설레는 여행지 발견부터 나만의 일정까지.<br>당신의 다음 여행을 함께 그려요.</p><a href="#MYTR-02" class="primary">나만의 여행 만들기 <span>↗</span></a></div><div class="hero-caption">YOUR NEXT CHAPTER <span>나를 위한 여행의 시작</span></div></section><form id="destination-search" class="destination-search"><label for="destination-query"><span>어디로 떠나고 싶으세요?</span><input id="destination-query" name="query" placeholder="도시, 국가 또는 여행지 검색" required maxlength="60" aria-describedby="search-error"></label><button class="primary" type="submit">여행지 검색 <span>⌕</span></button><p id="search-error" class="field-error" role="alert"></p></form><section class="recommendations"><div class="section-heading"><div><span class="eyebrow">FIND YOUR NEXT JOURNEY</span><h2>다음 여정은, 여기 어때요?</h2><p>가까운 설렘부터 낯선 풍경까지, 마음이 향하는 곳으로.</p></div><a href="#TRV-01" class="text-link">모든 여행지 보기 ↗</a></div><div class="tabs" role="group" aria-label="추천 여행지 지역">${['전체','국내','해외'].map(t=>`<button data-filter="${t}" aria-pressed="${selected===t}">${t}</button>`).join('')}<span>에디터가 고른 여행지</span></div><div id="destination-cards" class="destination-grid">${cards()}</div></section><section class="plan-banner"><div class="plan-icon" aria-hidden="true">✧</div><div><span>MAKE IT YOURS</span><h2>가고 싶은 곳을, 나만의 여정으로.</h2><p>여행의 시작과 끝을 한곳에. 나만의 일정을 그려보세요.</p></div><a href="#MYTR-02" class="outline">여행 계획 시작하기 ↗</a></section><footer class="service-footer"><a class="brand" href="#HOME-01">yeojeong</a><span>모든 여행에, 당신의 이야기를.</span><a href="#SUP-03">자주 묻는 질문</a><small>© YEOJEONG · UI 검토용 프로토타입</small></footer>`;}
- function render(){let id;try{id=decodeURIComponent(location.hash.slice(1))||'HOME-01';}catch{id='invalid';}const s=screens.find(x=>x.id===id);document.body.dataset.screen=s?.id||'HOME-01';document.getElementById('screen-meta').textContent=s?`${s.id}  /  ${[s.lv1,s.lv2,s.lv3].filter(Boolean).join('  ›  ')}${s.implemented?'  ·  구현 완료':'  ·  제작 예정'}`:'화면 목록';
- if(id==='screens'){content.innerHTML=`<section class="screen-directory"><h1>전체 화면 목록</h1>${screens.map(x=>`<a href="#${x.id}"><b>${x.id}</b> ${x.lv1} / ${x.title} <small>${x.implemented?'구현 완료':'제작 예정'}</small></a>`).join('')}</section>`;}
- else if(!s){content.innerHTML='<section class="placeholder"><span class="eyebrow">PAGE NOT FOUND</span><h1>화면을 찾을 수 없어요</h1><p>상단의 화면 선택 또는 화면검색을 이용해 주세요.</p><a class="primary" href="#HOME-01">메인으로 돌아가기</a></section>';}
- else {content.innerHTML=s.implemented?home():`${serviceHeader()}<section class="placeholder"><span class="placeholder-icon">↗</span><span class="eyebrow">${s.id} · COMING SOON</span><h1>${escape(s.title)}</h1><strong>제작 예정</strong><p>이번 1차 작업은 공통 레이아웃과 메인 화면까지입니다.<br>이 화면은 다음 단계에서 순차적으로 구현합니다.</p><a href="#HOME-01" class="outline">메인으로 돌아가기</a></section>`;}
- const desc=document.getElementById('screen-description');desc.hidden=!s;desc.innerHTML=s?`<div><span class="eyebrow">SCREEN DESCRIPTION</span><h2>${s.id} · ${escape(s.title)}</h2><span class="status-badge">${s.implemented?'1차 구현':'제작 예정'}</span></div><div><h3>기능 정의 · 원본 엑셀 ${s.sourceRow}행</h3><ul>${s.description.split('\n').map(line=>`<li>${escape(line.replace(/^-\s*/,''))}</li>`).join('')}</ul><p class="scope-note">${s.implemented?'이번 구현: 메뉴 이동, 검색 진입, 국내·해외 추천 필터. 검색 결과 및 상세 화면은 제작 예정입니다.':'현재는 화면 이동 및 기능 정의만 제공합니다. 입력·저장·인증 기능은 구현되지 않았습니다.'}</p></div>`:'';document.title=`${s?s.title:'화면 목록'} | YEOJEONG 웹 기획안`;}
- content.addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;selected=b.dataset.filter;content.querySelectorAll('[data-filter]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));document.getElementById('destination-cards').innerHTML=cards();});
- content.addEventListener('submit',e=>{if(e.target.id!=='destination-search')return;e.preventDefault();const input=e.target.elements.query;const error=document.getElementById('search-error');if(!input.value.trim()){error.textContent='여행지 또는 국가를 입력해 주세요.';input.setAttribute('aria-invalid','true');input.focus();return;}input.removeAttribute('aria-invalid');location.hash='TRV-01';const toast=document.getElementById('toast');toast.textContent=`“${input.value.trim()}” 검색 결과 화면은 제작 예정입니다.`;toast.classList.add('visible');setTimeout(()=>toast.classList.remove('visible'),4500);});
- window.addEventListener('hashchange',()=>{render();content.focus({preventScroll:true});window.scrollTo(0,0);});if(!location.hash)history.replaceState(null,'','#HOME-01');render();
+  const Y=window.YJ,{S,D,state,esc:e}=Y;
+  const screens=window.YEOJEONG_SCREENS;
+  const groups=[...new Set(screens.map(s=>s.lv1))];
+  const screenTitle=s=>[s.lv1,s.lv2,s.lv3].filter((v,i,a)=>v&&a.indexOf(v)===i).join(' · ');
+  window.GFAIR_SCREENS=groups.map(name=>({name,screens:screens.filter(s=>s.lv1===name).map(s=>({...s,title:screenTitle(s),summary:s.description}))}));
+  window.GFAIR_SCREEN_OVERVIEWS=Object.fromEntries(screens.map(s=>[s.id,s.description]));
+  function render(){
+    if(history.state?.yj)state.context={...state.context,...history.state.yj};
+    const id=Y.route(),screen=screens.find(s=>s.id===id);
+    document.body.dataset.screen=screen?.id||'HOME-01';
+    document.getElementById('screen-meta').textContent=screen?`${id} / ${screenTitle(screen)}`:'전체 화면 목록';
+    if(id==='screens')Y.content.innerHTML=`<section class="screen-directory"><h1>전체 화면 목록</h1><p class="muted">화면을 선택해 이동하세요. 20개 화면 모두 구현되어 있습니다.</p>${screens.map(s=>Y.link(s.id,`<b>${s.id}</b> ${screenTitle(s)} <small>구현 완료</small>`)).join('')}</section>`;
+    else if(!screen)Y.content.innerHTML=Y.empty('화면을 찾을 수 없어요','상단의 화면 선택 또는 화면검색을 이용해 주세요.',Y.link('HOME-01','메인으로 이동',{},'primary'));
+    else Y.content.innerHTML=Y.serviceHeader()+(S.error?`<p class="storage-warning" role="alert">${e(S.error)}</p>`:'')+Y.views[id]()+Y.serviceFooter();
+    document.title=`${screen?screenTitle(screen):'화면 목록'} | YEOJEONG 웹 기획안`;
+    Y.content.querySelectorAll('.sub-tabs a,.service-header nav a').forEach(a=>{if(a.hash==='#'+id)a.setAttribute('aria-current','page');});
+    window.dispatchEvent(new Event('yeojeong-render'));
+  }
+  Y.render=render;
+  function requireLogin(){if(S.loggedIn)return true;state.returnTo=Y.route();Y.go('AUTH-01');Y.toast('데모 로그인 후 이용해 주세요.');return false;}
+  const saveEditor=()=>{if(!state.editor)return;S.save(data=>{const i=data.trips.findIndex(t=>t.id===state.editor.id);if(i<0)throw Error('이 여행이 삭제되어 저장할 수 없습니다.');data.trips[i]=JSON.parse(JSON.stringify(state.editor));});state.editorDirty=false;render();Y.toast('일정을 브라우저에 저장했어요.');};
+  function placeModal(index){
+    const day=state.editor.days[state.editorDay],place=index===undefined?null:day.places[index];
+    if(!place&&day.places.length>=20){Y.toast('하루 최대 20개 장소까지 추가할 수 있어요.');return;}
+    Y.modal('edit',place?'방문 장소 수정':'방문 장소 추가',`${Y.field('name','장소명',{required:true,max:80,value:place?.name||'',attrs:'list="place-suggestions"'})}<datalist id="place-suggestions">${(Y.destination(state.editor.destinationId)?.spots||[]).map(s=>`<option value="${s}">`).join('')}</datalist>${Y.field('time','방문 시간',{type:'time',value:place?.time||''})}<label class="form-field"><span>장소 메모</span><textarea name="note" rows="3" maxlength="200">${e(place?.note||'')}</textarea><small>최대 200자</small></label>`,form=>{const fd=new FormData(form),name=fd.get('name').trim();if(!name){Y.formError(form,'장소명을 입력해 주세요.','name');return;}const item={name,time:fd.get('time'),note:fd.get('note').trim()};if(place)day.places[index]=item;else day.places.push(item);state.editorDirty=true;Y.closeModal();render();},'적용');
+  }
+  const actions={
+    'demo-login':()=>{if(/^(MYTR|MYP)-|^SUP-0[45]$/.test(Y.route()))state.returnTo=Y.route();if(!S.data.profile.id)S.reset();Y.login();},
+    logout:()=>Y.confirm('로그아웃할까요?','현재 브라우저의 데모 로그인 상태를 종료합니다. 저장한 여행은 유지됩니다.',()=>{S.logout();state.editor=null;state.editorDirty=false;Y.go('HOME-01');Y.toast('로그아웃했어요.');}),
+    favorite:el=>{if(!requireLogin())return;const id=el.dataset.id;if(!Y.destination(id))return;const liked=S.data.favorites.includes(id);S.save(data=>{data.favorites=liked?data.favorites.filter(x=>x!==id):[...data.favorites,id];});render();Y.toast(liked?'찜을 해제했어요.':'여행지를 찜했어요.');},
+    'home-filter':el=>{state.homeRegion=el.dataset.value;render();},
+    'reset-travel':()=>{Object.assign(state,{region:'전체',category:'전체',keyword:'',sort:'popular'});render();},
+    'auth-tab':el=>{state.authTab=el.dataset.value;state.authResult='';state.resetReady=false;render();},
+    'trip-filter':el=>{state.tripStatus=el.dataset.value;render();},
+    'edit-trip':()=>{state.tripEdit=true;Y.go('MYTR-02');},
+    'cancel-trip-form':()=>{Y.go(state.tripEdit?'MYTR-03':'MYTR-01');state.tripEdit=false;},
+    'delete-trip':el=>{if(!requireLogin())return;const id=el.dataset.id,t=S.data.trips.find(x=>x.id===id);if(!t)return;Y.confirm('여행을 삭제할까요?',`${e(t.title)}의 여행 정보와 모든 일정을 삭제합니다. 삭제 후 복원할 수 없습니다.`,()=>{S.save(data=>{data.trips=data.trips.filter(x=>x.id!==id);});if(state.editor?.id===id){state.editor=null;state.editorDirty=false;}Y.go('MYTR-01');Y.toast('여행을 삭제했어요.');});},
+    'copy-itinerary':()=>{
+      if(!requireLogin())return;const d=Y.destination(),r=Y.recommend(d,Number(state.context.recommendation)||0);
+      Y.modal('edit','추천 일정을 내 여행에 담기',`${Y.field('title','여행 제목',{required:true,max:60,value:r.title})}${Y.field('start','여행 시작일',{type:'date',required:true,attrs:'min="2020-01-01" max="2100-11-30"'})}<p class="muted">${r.length}일 일정이 복사되며 원본 추천 일정은 유지됩니다.</p>`,form=>{const fd=new FormData(form),title=fd.get('title').trim(),start=fd.get('start');if(!title){Y.formError(form,'여행 제목을 입력해 주세요.','title');return;}const end=new Date(Date.parse(start+'T00:00:00Z')+(r.length-1)*86400000).toISOString().slice(0,10),id=S.uid('trip');S.save(data=>{data.trips.unshift({id,title,destinationId:d.id,start,end,days:JSON.parse(JSON.stringify(r.days))});});Y.closeModal();Y.go('MYTR-03',{tripId:id});Y.toast('추천 일정을 내 여행에 담았어요.');},'내 여행에 담기');
+    },
+    'editor-day':el=>{state.editorDay=Number(el.dataset.index);render();},
+    'add-place':()=>placeModal(),
+    'edit-place':el=>placeModal(Number(el.dataset.index)),
+    'delete-place':el=>{const index=Number(el.dataset.index);Y.confirm('장소를 삭제할까요?',e(state.editor.days[state.editorDay].places[index].name)+'을(를) 일정에서 제외합니다. 일정 저장 전까지 원본에 반영되지 않습니다.',()=>{state.editor.days[state.editorDay].places.splice(index,1);state.editorDirty=true;render();});},
+    'move-place':el=>{const i=Number(el.dataset.index),to=i+Number(el.dataset.direction),places=state.editor.days[state.editorDay].places;if(to<0||to>=places.length)return;[places[i],places[to]]=[places[to],places[i]];state.editorDirty=true;render();},
+    'save-itinerary':saveEditor,
+    'cancel-editor':()=>{const leave=()=>{state.editor=null;state.editorDirty=false;Y.go('MYTR-03');};if(state.editorDirty)Y.confirm('변경을 취소할까요?','저장하지 않은 일정 변경사항은 사라집니다.',leave);else leave();},
+    'reset-notices':()=>{state.noticeQuery='';state.noticeCategory='전체';render();},
+    'reset-faq':()=>{state.faqQuery='';state.faqCategory='전체';render();},
+    'notice-download':()=>{const n=Y.notice();if(n?.attachment)Y.download(n.attachment,n.title+'\n\n'+n.body);},
+    'edit-inquiry':()=>{if(Y.inquiry()?.status!=='답변 대기'){Y.toast('답변 대기 문의만 수정할 수 있어요.');return;}state.inquiryEdit=true;Y.go('SUP-04');},
+    'cancel-inquiry':()=>{state.inquiryEdit=false;Y.go('SUP-05');},
+    'delete-inquiry':()=>{const n=Y.inquiry();if(!n||n.status!=='답변 대기')return;Y.confirm('문의를 삭제할까요?','등록한 문의와 첨부파일이 이 브라우저에서 삭제됩니다.',()=>{S.save(data=>{data.inquiries=data.inquiries.filter(x=>x.id!==n.id);});state.inquiryEdit=false;Y.go('SUP-04');Y.toast('문의를 삭제했어요.');});},
+    'inquiry-download':()=>{const file=Y.inquiry()?.file;if(!file)return;const [meta,content]=file.data.split(','),binary=atob(content),bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));Y.download(file.name,bytes,meta.slice(5).split(';')[0]);},
+    withdraw:()=>Y.confirm('데모 회원을 탈퇴할까요?','이 브라우저의 프로필·여행·찜·문의·첨부파일이 삭제됩니다. 복원할 수 없습니다.',()=>{S.withdraw();state.editor=null;state.editorDirty=false;Y.go('HOME-01');Y.toast('데모 계정과 저장 데이터를 삭제했어요.');}),
+    'reset-data':()=>Y.confirm('실습 데이터를 초기화할까요?','모든 변경을 삭제하고 최초 예시 데이터를 복원합니다. 데모 로그인은 해제됩니다.',()=>{S.reset();state.editor=null;state.editorDirty=false;Y.go('HOME-01');Y.toast('예시 데이터로 초기화했어요.');}),
+    'close-modal':()=>Y.closeModal()
+  };
+  const handlers={
+    'home-search':form=>{const value=form.elements.query.value.trim();if(!value){Y.formError(form,'여행지 또는 국가를 입력해 주세요.','query');return;}state.keyword=value;state.region='전체';state.category='전체';Y.go('TRV-01');},
+    'travel-filter':form=>{const fd=new FormData(form);Object.assign(state,{region:fd.get('region'),category:fd.get('category'),keyword:fd.get('keyword').trim()});render();},
+    'login-form':form=>{const fd=new FormData(form);if(fd.get('id').trim()!==S.data.profile.id){Y.formError(form,'이 브라우저의 데모 아이디를 확인해 주세요. 기본 아이디는 demo입니다.','id');return;}if(fd.get('password').length<8){Y.formError(form,'모의 비밀번호를 8자 이상 입력해 주세요.','password');return;}Y.login(fd.get('remember')==='on');},
+    'agreement-form':form=>{const fd=new FormData(form);if(!fd.has('service')||!fd.has('privacy')){Y.formError(form,'필수 약관에 모두 동의해 주세요.');return;}state.agreements={service:true,privacy:true,marketing:fd.has('marketing')};Y.go('JOIN-02');},
+    'join-form':form=>{if(!state.agreements){Y.go('JOIN-01');return;}const fd=new FormData(form);if(fd.get('password')!==fd.get('confirm')){Y.formError(form,'비밀번호가 일치하지 않습니다.','confirm');return;}if(fd.get('id').trim()===S.data.profile.id){Y.formError(form,'이미 사용 중인 데모 아이디입니다.','id');return;}for(const k of ['name','nickname'])if(!fd.get(k).trim()){Y.formError(form,'공백만 입력할 수 없습니다.',k);return;}Y.confirm('데모 회원가입을 완료할까요?','이 프로토타입은 브라우저당 한 개의 프로필을 사용합니다. 기존 실습 데이터는 새 프로필로 전환하면서 초기화됩니다. 실제 계정은 생성되지 않습니다.',()=>{S.save(data=>{data.profile={id:fd.get('id').trim(),name:fd.get('name').trim(),nickname:fd.get('nickname').trim(),email:fd.get('email').trim()};data.trips=[];data.favorites=[];data.inquiries=[];data.agreements=state.agreements;});S.logout();state.agreements=null;state.editor=null;state.editorDirty=false;Y.go('AUTH-01');Y.toast('데모 프로필을 만들었어요. 가입한 아이디로 로그인해 주세요.');});},
+    'recovery-form':form=>{const fd=new FormData(form),p=S.data.profile;const found=(state.authTab==='id'?fd.get('name').trim()===p.name:fd.get('name').trim()===p.id)&&fd.get('email').trim().toLowerCase()===p.email.toLowerCase();if(!found){Y.formError(form,'입력한 정보와 일치하는 데모 프로필이 없습니다.');return;}state.authResult=state.authTab==='id'?`데모 아이디는 ${p.id}입니다.`:'데모 인증번호를 화면에 표시했습니다. 이메일은 발송되지 않습니다.';state.resetReady=state.authTab==='password';render();},
+    'reset-form':form=>{const fd=new FormData(form);if(fd.get('code')!=='123456'){Y.formError(form,'데모 인증번호 123456을 입력해 주세요.','code');return;}if(fd.get('password')!==fd.get('confirm')){Y.formError(form,'비밀번호가 일치하지 않습니다.','confirm');return;}state.resetReady=false;state.authResult='재설정 절차를 완료했어요. 데모는 비밀번호를 저장하지 않으며 임의의 8자 이상으로 로그인할 수 있습니다.';render();},
+    'trip-form':form=>{
+      const fd=new FormData(form),title=fd.get('title').trim(),start=fd.get('start'),end=fd.get('end'),dates=S.dates(start,end),old=state.tripEdit?Y.trip():null;
+      if(!title){Y.formError(form,'여행 제목을 입력해 주세요.','title');return;}if(!dates.length){Y.formError(form,'종료일은 시작일 이후여야 하며 여행 기간은 최대 30일입니다.','end');return;}if(!Y.destination(fd.get('destinationId'))){Y.formError(form,'여행 지역을 선택해 주세요.','destinationId');return;}
+      const apply=()=>{const id=old?.id||S.uid('trip');S.save(data=>{const days=dates.map((_,i)=>old?.days[i]||{places:[],memo:''});const trip={id,title,destinationId:fd.get('destinationId'),start,end,days};if(old)data.trips[data.trips.findIndex(x=>x.id===id)]=trip;else data.trips.unshift(trip);});state.tripEdit=false;state.editor=null;state.editorDirty=false;Y.go('MYTR-03',{tripId:id});Y.toast('여행 정보를 저장했어요.');};
+      if(old&&dates.length<old.days.length)Y.confirm('여행 기간을 줄일까요?','제외되는 날짜의 장소와 메모가 삭제됩니다. 날짜 변경 시 일정은 1일차부터 순서대로 유지됩니다.',apply);else apply();
+    },
+    'profile-form':form=>{const fd=new FormData(form);for(const k of ['name','nickname'])if(!fd.get(k).trim()){Y.formError(form,'공백만 입력할 수 없습니다.',k);return;}S.save(data=>{data.profile={...data.profile,name:fd.get('name').trim(),nickname:fd.get('nickname').trim(),email:fd.get('email').trim()};});render();Y.toast('예시 프로필을 저장했어요.');},
+    'password-form':form=>{const fd=new FormData(form);if(fd.get('password')!==fd.get('confirm')){Y.formError(form,'새 비밀번호가 일치하지 않습니다.','confirm');return;}if(fd.get('password')===fd.get('current')){Y.formError(form,'새 비밀번호를 현재 입력값과 다르게 입력해 주세요.','password');return;}form.reset();Y.toast('변경 절차 확인 완료. 실제 비밀번호 대조·저장은 하지 않습니다.');},
+    'notice-filter':form=>{const fd=new FormData(form);state.noticeCategory=fd.get('category');state.noticeQuery=fd.get('keyword').trim();render();},
+    'faq-filter':form=>{const fd=new FormData(form);state.faqCategory=fd.get('category');state.faqQuery=fd.get('keyword').trim();render();},
+    'inquiry-form':async form=>{
+      const fd=new FormData(form),title=fd.get('title').trim(),body=fd.get('body').trim();if(!title||!body){Y.formError(form,'제목과 내용을 공백 없이 입력해 주세요.',!title?'title':'body');return;}const old=state.inquiryEdit?Y.inquiry():null;if(old&&old.status!=='답변 대기'){Y.formError(form,'답변 완료 문의는 수정할 수 없습니다.');return;}
+      let file=fd.has('removeFile')?null:old?.file||null;const upload=fd.get('file');if(upload?.size){if(upload.size>2*1024*1024){Y.formError(form,'첨부파일은 최대 2MB입니다.','file');return;}if(!/\.(png|jpe?g|pdf|txt)$/i.test(upload.name)){Y.formError(form,'PNG, JPG, PDF, TXT 파일만 첨부할 수 있습니다.','file');return;}const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error('파일을 읽지 못했습니다. 다시 선택해 주세요.'));r.readAsDataURL(upload);});file={name:upload.name,size:upload.size,data};}
+      const id=old?.id||S.uid('inquiry'),record={id,type:fd.get('type'),title,body,date:old?.date||S.today(),status:'답변 대기',answer:'',file};S.save(data=>{if(old)data.inquiries[data.inquiries.findIndex(i=>i.id===id)]=record;else data.inquiries.unshift(record);});state.inquiryEdit=false;Y.go('SUP-05',{inquiryId:id});Y.toast('문의가 브라우저에 저장되었습니다. 실제 전송은 되지 않습니다.');
+    }
+  };
+  document.addEventListener('click',event=>{
+    const action=event.target.closest('[data-action]');if(action&&actions[action.dataset.action]){event.preventDefault();try{actions[action.dataset.action](action);}catch(error){Y.toast(error.message);}return;}
+    const a=event.target.closest('a[data-go]');if(a&&!event.ctrlKey&&!event.metaKey&&!event.shiftKey){event.preventDefault();if(a.dataset.go==='MYTR-02')state.tripEdit=false;if(a.dataset.go==='SUP-04')state.inquiryEdit=false;Y.go(a.dataset.go,JSON.parse(a.dataset.context||'{}'));}
+  });
+  document.addEventListener('submit',async event=>{
+    const form=event.target,id=form.getAttribute('id');if(form.closest('#content,[data-service-dialog]'))event.preventDefault();const handler=id==='modal-form'?Y.modalSubmit:handlers[id];if(!handler)return;event.preventDefault();if(form.dataset.submitting==='true'||!form.reportValidity())return;form.querySelectorAll('.form-error,.input-error').forEach(x=>x.textContent='');form.dataset.submitting='true';const submit=form.querySelector('[type="submit"],button:not([type])');if(submit)submit.disabled=true;try{await handler(form);}catch(error){Y.formError(form,error.message);}finally{form.dataset.submitting='false';if(submit)submit.disabled=false;}
+  });
+  document.addEventListener('change',event=>{if(event.target.id==='travel-sort'){state.sort=event.target.value;render();}if(event.target.id==='terms-all'){event.target.form.querySelectorAll('input[name]').forEach(x=>x.checked=event.target.checked);}if(event.target.closest('#agreement-form')&&event.target.name){const inputs=[...event.target.form.querySelectorAll('input[name]')];document.getElementById('terms-all').checked=inputs.every(x=>x.checked);}});
+  document.addEventListener('input',event=>{if(event.target.id==='day-memo'&&state.editor){state.editor.days[state.editorDay].memo=event.target.value;state.editorDirty=true;document.getElementById('save-status').textContent='저장하지 않은 변경사항이 있어요.';}});
+  document.querySelector('[data-service-dialog]').addEventListener('cancel',event=>{event.preventDefault();Y.closeModal();});
+  window.addEventListener('beforeunload',event=>{if(state.editorDirty){event.preventDefault();event.returnValue='';}});
+  let previousRoute=Y.route();
+  window.addEventListener('hashchange',()=>{if(previousRoute==='MYTR-02'&&Y.route()!=='MYTR-02')state.tripEdit=false;if(previousRoute==='SUP-04'&&Y.route()!=='SUP-04')state.inquiryEdit=false;previousRoute=Y.route();render();Y.content.focus({preventScroll:true});window.scrollTo(0,0);});
+  if(!location.hash)history.replaceState({yj:state.context},'','#HOME-01');
+  render();
 })();
