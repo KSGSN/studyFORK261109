@@ -1,0 +1,1 @@
+{"name":"study-collaboration-server","private":true,"type":"module","engines":{"node":">=24"},"scripts":{"start":"node index.mjs","test":"node --test test.mjs"}}
