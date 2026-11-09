@@ -1,4 +1,4 @@
-/* 원본 엑셀 행과 메뉴 계층을 유지합니다. ID는 이 프로토타입에서 정의했습니다. */
+/* 원본 메뉴 및 기존 화면 ID를 유지하며 추가 요청 화면을 함께 정의합니다. */
 window.YEOJEONG_SCREENS = [
   {
     "id": "HOME-01",
@@ -89,6 +89,17 @@ window.YEOJEONG_SCREENS = [
     "description": "- 추천 일정의 날짜별 방문 장소, 이동 순서 및 상세정보 제공\n- 추천 일정을 내 여행에 담기 기능 제공",
     "implemented": true,
     "sourceRow": 12
+  },
+  {
+    "id": "TRV-05",
+    "lv1": "여행지 찾기",
+    "lv2": "상세",
+    "lv3": "여행 후기",
+    "title": "여행 후기",
+    "description": "- 선택한 여행지의 평균 별점 및 점수별 후기 분포 조회\n- 여행자별 평점, 방문 시기, 동행 유형 및 상세 후기 확인\n- 별점 필터와 최신순·별점순 정렬 제공\n- 여행지 상세 화면으로 돌아가기",
+    "implemented": true,
+    "sourceRow": null,
+    "source": "사용자 추가 요청"
   },
   {
     "id": "MYTR-01",

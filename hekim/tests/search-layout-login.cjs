@@ -33,5 +33,5 @@ const assert=require('node:assert/strict');
   }
  }
  await go('HOME-01');await page.locator('#destination-query').fill('교토');await page.locator('#home-search button[type="submit"]').click();await page.locator('#travel-filter').waitFor();assert.equal(await page.locator('.destination').count(),1);
- assert.deepEqual(errors,[]);await browser.close();console.log('PASS: blank login/return/remember, entered credential validation, 20 screens × 5 widths × 2 description states, error row does not shrink search input, SVG icons, successful search.');
+ assert.deepEqual(errors,[]);await browser.close();console.log('PASS: blank login/return/remember, entered credential validation, all registered screens × 5 widths × 2 description states, error row does not shrink search input, SVG icons, successful search.');
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -11,7 +11,7 @@
     const id=Y.route(),screen=screens.find(s=>s.id===id);
     document.body.dataset.screen=screen?.id||'HOME-01';
     document.getElementById('screen-meta').textContent=screen?`${id} / ${screenTitle(screen)}`:'전체 화면 목록';
-    if(id==='screens')Y.content.innerHTML=`<section class="screen-directory"><h1>전체 화면 목록</h1><p class="muted">화면을 선택해 이동하세요. 20개 화면 모두 구현되어 있습니다.</p>${screens.map(s=>Y.link(s.id,`<b>${s.id}</b> ${screenTitle(s)} <small>구현 완료</small>`)).join('')}</section>`;
+    if(id==='screens')Y.content.innerHTML=`<section class="screen-directory"><h1>전체 화면 목록</h1><p class="muted">화면을 선택해 이동하세요. ${screens.length}개 화면 모두 구현되어 있습니다.</p>${screens.map(s=>Y.link(s.id,`<b>${s.id}</b> ${screenTitle(s)} <small>구현 완료</small>`)).join('')}</section>`;
     else if(!screen)Y.content.innerHTML=Y.empty('화면을 찾을 수 없어요','상단의 화면 선택 또는 화면검색을 이용해 주세요.',Y.link('HOME-01','메인으로 이동',{},'primary'));
     else Y.content.innerHTML=Y.serviceHeader()+(S.error?`<p class="storage-warning" role="alert">${e(S.error)}</p>`:'')+Y.views[id]()+Y.serviceFooter();
     document.title=`${screen?screenTitle(screen):'화면 목록'} | YEOJEONG 웹 기획안`;
@@ -29,6 +29,7 @@
   const actions={
     logout:()=>Y.confirm('로그아웃할까요?','로그아웃 후에도 저장한 여행은 유지됩니다.',()=>{S.logout();state.editor=null;state.editorDirty=false;Y.go('HOME-01');Y.toast('로그아웃했어요.');}),
     favorite:el=>{if(!requireLogin())return;const id=el.dataset.id;if(!Y.destination(id))return;const liked=S.data.favorites.includes(id);S.save(data=>{data.favorites=liked?data.favorites.filter(x=>x!==id):[...data.favorites,id];});render();Y.toast(liked?'찜을 해제했어요.':'여행지를 찜했어요.');},
+    'review-score':el=>{state.reviewScore=el.dataset.value;render();},
     'home-filter':el=>{state.homeRegion=el.dataset.value;render();},
     'reset-travel':()=>{Object.assign(state,{region:'전체',category:'전체',keyword:'',sort:'popular'});render();},
     'auth-tab':el=>{state.authTab=el.dataset.value;state.authResult='';state.resetReady=false;render();},
@@ -88,7 +89,7 @@
   document.addEventListener('submit',async event=>{
     const form=event.target,id=form.getAttribute('id');if(form.closest('#content,[data-service-dialog]'))event.preventDefault();const handler=id==='modal-form'?Y.modalSubmit:handlers[id];if(!handler)return;event.preventDefault();if(form.dataset.submitting==='true'||!form.reportValidity())return;form.querySelectorAll('.form-error,.input-error').forEach(x=>x.textContent='');form.dataset.submitting='true';const submit=form.querySelector('[type="submit"],button:not([type])');if(submit)submit.disabled=true;try{await handler(form);}catch(error){Y.formError(form,error.message);}finally{form.dataset.submitting='false';if(submit)submit.disabled=false;}
   });
-  document.addEventListener('change',event=>{if(event.target.id==='travel-sort'){state.sort=event.target.value;render();}if(event.target.id==='terms-all'){event.target.form.querySelectorAll('input[name]').forEach(x=>x.checked=event.target.checked);}if(event.target.closest('#agreement-form')&&event.target.name){const inputs=[...event.target.form.querySelectorAll('input[name]')];document.getElementById('terms-all').checked=inputs.every(x=>x.checked);}});
+  document.addEventListener('change',event=>{if(event.target.id==='review-sort'){state.reviewSort=event.target.value;render();}if(event.target.id==='travel-sort'){state.sort=event.target.value;render();}if(event.target.id==='terms-all'){event.target.form.querySelectorAll('input[name]').forEach(x=>x.checked=event.target.checked);}if(event.target.closest('#agreement-form')&&event.target.name){const inputs=[...event.target.form.querySelectorAll('input[name]')];document.getElementById('terms-all').checked=inputs.every(x=>x.checked);}});
   document.addEventListener('input',event=>{if(event.target.id==='day-memo'&&state.editor){state.editor.days[state.editorDay].memo=event.target.value;state.editorDirty=true;document.getElementById('save-status').textContent='저장하지 않은 변경사항이 있어요.';}});
   document.querySelector('[data-service-dialog]').addEventListener('cancel',event=>{event.preventDefault();Y.closeModal();});
   window.addEventListener('beforeunload',event=>{if(state.editorDirty){event.preventDefault();event.returnValue='';}});

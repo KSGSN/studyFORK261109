@@ -929,3 +929,64 @@ html,body {background:#fff}
 .destination-search input {min-width:0}
 .search-submit {white-space:nowrap;gap:10px;flex-shrink:0}
 .search-icon {display:block;width:19px;height:19px;flex:none;overflow:visible}
+
+/* 여행지 별점에서 연결되는 여행 후기 */
+.rating-link {display:inline-flex;align-items:center;gap:12px;padding:7px 0;margin:0 0 3px;border-radius:3px;flex-wrap:wrap}
+.rating-link:hover .rating-review-count {text-decoration:underline;text-underline-offset:3px}
+.rating-review-count {font-size:11px;color:var(--muted)}
+.reviews-summary {display:grid;grid-template-columns:170px minmax(180px,1fr) minmax(190px,280px);gap:35px;align-items:center;border:1px solid var(--line);background:#fafcf7;border-radius:9px;padding:30px;margin:0 0 25px}
+.review-average>strong {display:block;font-size:47px;font-weight:500;line-height:1.5;letter-spacing:-2px}
+.review-average>strong small {font-size:15px;color:var(--muted);letter-spacing:0;font-weight:400}
+.review-stars {font-size:21px;letter-spacing:2px;background:linear-gradient(90deg,#7b8f4e var(--rating-percent),#dce2d3 var(--rating-percent));background-clip:text;-webkit-background-clip:text;color:transparent;display:inline-block}
+.review-average p {font-size:11px;color:var(--muted);margin:8px 0 0}
+.review-distribution {display:flex;flex-direction:column;gap:10px}
+.review-distribution>div {display:flex;gap:12px;align-items:center;font-size:11px;color:#75836d}
+.review-distribution span {width:28px;flex:none}
+.review-distribution b {width:20px;flex:none;font-weight:500;text-align:right}
+.review-distribution progress {width:100%;min-width:0;flex:1;height:7px;appearance:none;border:0;border-radius:8px;overflow:hidden;background:#e5eadf}
+.review-distribution progress::-webkit-progress-bar {background:#e5eadf;border-radius:8px}
+.review-distribution progress::-webkit-progress-value {background:#788d56;border-radius:8px}
+.review-distribution progress::-moz-progress-bar {background:#788d56;border-radius:8px}
+.reviews-destination {display:flex;gap:16px;align-items:center;padding-left:25px;border-left:1px solid var(--line)}
+.reviews-destination img {width:95px;height:95px;object-fit:cover;border-radius:7px;flex:none}
+.reviews-destination span {font-size:10px;color:var(--muted)}
+.reviews-destination strong {display:block;font-size:22px;font-weight:500;margin:4px 0}
+.reviews-destination p {font-size:11px;color:var(--muted);margin:0;word-break:keep-all}
+.review-filter {display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;padding:10px 0 18px;border-bottom:1px solid var(--line)}
+.review-score-tabs {display:flex;gap:8px;flex-wrap:wrap}
+.review-score-tabs button {border:1px solid #e3e8dc;background:#fff;border-radius:30px;padding:8px 17px;font-size:11px;color:#6b7c62;white-space:nowrap}
+.review-score-tabs button[aria-pressed=true] {background:var(--ink);border-color:var(--ink);color:#fff}
+.review-filter label {display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted)}
+.review-filter select {border:1px solid var(--line);padding:8px 10px;border-radius:5px;color:var(--ink);font:inherit;background:white}
+.review-card {border:1px solid var(--line);border-radius:7px;padding:27px 30px;margin-bottom:20px}
+.review-card>header {display:flex;align-items:center;gap:13px;margin-bottom:18px}
+.review-avatar {display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#edf3e7;color:#6d815c;font-size:15px;flex:none}
+.review-card>header strong {font-size:12px;font-weight:600}
+.review-card>header p {font-size:10px;color:var(--muted);margin:4px 0 0}
+.review-card time {margin-left:auto;align-self:flex-start;color:var(--muted);font-size:10px}
+.review-card-score {display:flex;gap:10px;align-items:center;font-size:14px;color:#7b8f4e}
+.review-card-score b {font-size:11px;font-weight:500}
+.review-card h2 {font-size:17px;margin:12px 0;font-weight:600}
+.review-body {font-size:12px;line-height:2;color:#607164;overflow-wrap:anywhere;word-break:keep-all}
+.review-body p {margin:8px 0}
+@media(min-width:1101px) {
+ .with-spec .reviews-summary {grid-template-columns:140px minmax(150px,1fr);gap:25px;padding:25px}
+ .with-spec .reviews-destination {display:none}
+}
+@media(max-width:900px) {
+ .reviews-summary {grid-template-columns:140px minmax(150px,1fr);gap:25px;padding:25px}
+ .reviews-destination {display:none}
+}
+@media(max-width:500px) {
+ .reviews-summary {grid-template-columns:1fr;gap:22px;padding:22px}
+ .review-average {text-align:center}
+ .review-filter {align-items:flex-start}
+ .review-score-tabs {gap:7px}
+ .review-score-tabs button {padding:7px 13px}
+ .review-filter label {margin-left:auto}
+ .review-card {padding:20px 17px}
+ .review-card>header {gap:10px;flex-wrap:wrap}
+ .review-card time {font-size:9px}
+ .review-card h2 {font-size:16px}
+ .reviews-page .result-heading {align-items:flex-start;flex-wrap:wrap}
+}

@@ -14,6 +14,7 @@
     pageHead(kicker,title,subtitle,action=''){return `<div class="page-heading"><div><span class="eyebrow">${kicker}</span><h1>${title}</h1><p>${subtitle}</p></div>${action}</div>`;},
     empty(title,body,action=''){return `<div class="empty-state"><span aria-hidden="true">✧</span><h2>${title}</h2><p>${body}</p>${action}</div>`;},
     destination(id=state.context.destinationId){return D.destinations.find(d=>d.id===id);},
+    reviews(id=state.context.destinationId){return window.YEOJEONG_REVIEWS[id]||[];},
     trip(){return S.data.trips.find(t=>t.id===state.context.tripId);},
     notice(){return D.notices.find(n=>n.id===state.context.noticeId);},
     inquiry(){return S.data.inquiries.find(n=>n.id===state.context.inquiryId);},

@@ -37,5 +37,5 @@ const assert=require('node:assert/strict');
  }
  await page.setViewportSize({width:1440,height:1000});await go('MYTR-01');if(await panel.isVisible())await page.locator('[data-spec="close"]').click();await numbers.click();await page.screenshot({path:'/tmp/yeojeong-pins-rail.png',fullPage:true});
  await page.locator('[data-spec="screen-search"]').click();await page.locator('.screen-directory').waitFor();assert.equal(await pins.count(),0);assert.equal(await panel.isVisible(),false);
- assert.deepEqual(errors,[]);await browser.close();console.log('PASS: hidden on entry/reload/navigation, same-pin open/close, switching pins, ARIA state, non-overlap in all 20 screens at PC/mobile with descriptions open/closed.');
+ assert.deepEqual(errors,[]);await browser.close();console.log('PASS: hidden on entry/reload/navigation, same-pin open/close, switching pins, ARIA state, non-overlap in all all registered screens at PC/mobile with descriptions open/closed.');
 })().catch(error=>{console.error(error);process.exit(1)});
