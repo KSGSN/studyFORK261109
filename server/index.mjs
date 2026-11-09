@@ -71,20 +71,21 @@ export function createApp({dbPath=process.env.DB_PATH||'./data/study.sqlite', pr
     const pending=get(str(body.code,500),'exchange');if(!pending||pending.project!==project||hash(str(body.verifier,200))!==pending.challenge)fail(401,'로그인 요청이 유효하지 않습니다.');
     get(body.code,'exchange',true);const user=await identity(pending.accessToken,project),token=random();put(token,'session',{project,accessToken:pending.accessToken},8*3600000);return json(200,{token,user});
    }
-   const token=req.headers.authorization?.replace(/^Bearer /,'');let session=token?get(token,'session'):null;
-   if(token&&(!session||session.project!==project))fail(401,'로그인이 만료되었습니다.');
+   const token=req.headers.authorization?.replace(/^Bearer /,'');
+
    if(op==='logout'&&req.method==='POST'){if(token)get(token,'session',true);return json(200,{ok:true});}
    if(op==='config'&&req.method==='GET')return json(200,{githubConfigured:configured});
-   const user=session?await identity(session.accessToken,project):null;
+   const user={name:'익명',editor:true};
    if(op==='list'&&req.method==='GET')return json(200,{records:records(project).filter(r=>r.screen===url.searchParams.get('screen')),user,githubConfigured:configured});
    if(op==='planning-notes'&&req.method==='GET')return json(200,{records:records(project).flatMap(r=>{try{const s=JSON.parse(r.text);return s.planningNote?[{id:r.id,screen:r.screen,number:r.number,item:s.item,planningNote:s.planningNote}]:[];}catch{return [];}})});
    if(req.method!=='POST')fail(400,'지원하지 않는 요청입니다.');
-   if(!user?.editor)fail(401,'공동작업자 로그인이 필요합니다.');
+
    if(op==='create'){
     const screen=str(body.screen),text=str(body.text,5000),a=body.anchor;
     if(!a||typeof a.selector!=='string'||a.selector.length>1000||!Number.isFinite(a.x)||!Number.isFinite(a.y)||a.x<0||a.x>1||a.y<0||a.y>1)fail(400,'핀 위치를 확인해 주세요.');
     const r={id:random(),screen,text,anchor:{selector:a.selector,sample:String(a.sample||'').slice(0,100),x:a.x,y:a.y},number:Math.max(0,...records(project).filter(r=>r.screen===screen).map(r=>r.number))+1,revision:1,author:user.name,created:new Date().toISOString(),comments:[]};save(project,r);return json(200,{id:r.id});
    }
+   if(op==='status'){const parent=records(project).find(r=>r.comments.some(c=>c.id===body.id));if(!parent)fail(404,'댓글을 찾지 못했습니다.');const comment=parent.comments.find(c=>c.id===body.id);if(comment.revision!==body.revision)fail(409,'다른 사용자가 수정했습니다. 다시 불러와 주세요.');if(!['미처리','처리중','처리완료'].includes(body.status))fail(400,'처리 상태를 확인해 주세요.');Object.assign(comment,{status:body.status,revision:comment.revision+1,updated:new Date().toISOString(),updatedBy:user.name});parent.revision++;save(project,parent);return json(200,{id:comment.id});}
    const r=records(project).find(r=>r.id===body.id);if(!r)fail(404,'설명을 찾지 못했습니다.');if(r.revision!==body.revision)fail(409,'다른 사용자가 수정했습니다. 다시 불러와 주세요.');
    if(op==='delete')db.prepare('DELETE FROM records WHERE id=? AND project=?').run(r.id,project);
    else {if(op==='update')r.text=str(body.text,5000);else if(op==='move'){for(const k of ['offsetX','offsetY']){if(!Number.isFinite(body[k])||Math.abs(body[k])>4096)fail(400,'핀 위치를 확인해 주세요.');r.anchor[k]=body[k];}}else fail(400,'지원하지 않는 요청입니다.');r.revision++;r.updated=new Date().toISOString();r.updatedBy=user.name;save(project,r);}

@@ -7,7 +7,7 @@
  const savingPins=new Set();
  const route=()=>window.MOCKUP_DESCRIPTION_CONTEXT?.id||decodeURIComponent(location.hash.slice(1))||document.body.dataset.screen||'screens';
  const isOverview=record=>{try{return JSON.parse(record.text).format==='screen-overview-v1';}catch{return false;}};
- const records=()=>store.records.filter(record=>{try{return !['screen-overview-v1','screen-message-v1'].includes(JSON.parse(record.text).format);}catch{return true;}}),canEdit=()=>!!store.user?.editor;
+ const records=()=>store.records.filter(record=>{try{return !['screen-overview-v1','screen-message-v1'].includes(JSON.parse(record.text).format);}catch{return true;}}),canEdit=()=>true;
  const element=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
  const button=(text,action)=>{const el=element('button',text);el.type='button';el.addEventListener('click',action);return el;};
  const format=value=>value?new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',dateStyle:'short',timeStyle:'short'}).format(new Date(value)):'';
@@ -118,8 +118,7 @@
   const pending=pendingPlanningTarget&&route()===pendingPlanningTarget.screen&&records().find(record=>record.id===pendingPlanningTarget.id);if(pending)selected=pending.id;
   const focused=document.activeElement;const focusId=focused?.matches('.annotation-card textarea,.annotation-card input[data-comment-name]')?focused.closest('article').id:null;const focusSelector=focused?.tagName==='INPUT'?'input[data-comment-name]':'textarea';const selection=focusId?[focused.selectionStart,focused.selectionEnd]:null;const scrollTop=panel.scrollTop;
   let controls=document.getElementById('annotation-controls');if(!controls){controls=element('div',undefined,'annotation-controls');controls.id='annotation-controls';toolbar.append(controls);}controls.replaceChildren();controls.hidden=route()==='screens';
-  if(store.user){controls.append(element('span',store.user.name+' · '+(canEdit()?'공동작업자':'댓글 참여자')));if(canEdit()){const add=button(picking?'영역 선택 취소':'영역에 설명 추가',()=>{if(!picking)window.dispatchEvent(new Event('annotation-select-scope'));picking=!picking;if(picking)window.dispatchEvent(new Event('annotation-open'));render();});add.setAttribute('aria-pressed',String(picking));controls.append(add);}controls.append(button('로그아웃',async()=>{await store.logout();picking=false;dialog.close();render();}));}
-  else {const login=button('GitHub 공동작업자 로그인',()=>store.login().catch(error=>message(error.message)));login.disabled=!store.githubReady;login.title=store.githubReady?'GitHub 계정으로 저장소 공동작업자 확인':store.error||'GitHub 로그인 앱 연결 설정 중';controls.append(login);}
+  controls.append(element('span','공동 편집'));const add=button(picking?'영역 선택 취소':'영역에 설명 추가',()=>{if(!picking)window.dispatchEvent(new Event('annotation-select-scope'));picking=!picking;if(picking)window.dispatchEvent(new Event('annotation-open'));render();});add.setAttribute('aria-pressed',String(picking));controls.append(add);
   document.body.classList.toggle('annotation-picking',picking);const old=document.getElementById('annotation-panel');old?.remove();if(route()==='screens'){pins();return;}
   const section=element('section',undefined,'annotation-panel');section.id='annotation-panel';const screen=window.MOCKUP_DESCRIPTION_CONTEXT||(window.GFAIR_SCREENS||[]).flatMap(group=>group.screens).find(screen=>screen.id===route());section.append(element('h2','['+route()+'] '+(screen?.title||'')));section.append(screenOverview(screen));
   if(picking)section.append(element('p','본문의 설명할 영역을 클릭하세요. Esc로 취소할 수 있습니다.','annotation-guide'));
